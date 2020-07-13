@@ -1,0 +1,45 @@
+{
+  "name": "node-clean-tdd",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "author": "Calleu Fuzi",
+  "scripts": {
+    "start": "node index.js",
+    "lint": "eslint --fix",
+    "test": "jest --coverage",
+    "test:tdd": "jest --watch"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn run lint && yarn test"
+    }
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "*.js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 100,
+        "branches": 100,
+        "functions": 100,
+        "lines": 100
+      }
+    }
+  },
+  "devDependencies": {
+    "eslint": "^7.4.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jest": "^23.18.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "husky": "^4.2.5",
+    "jest": "^26.1.0",
+    "prettier": "^2.0.5"
+  }
+}
