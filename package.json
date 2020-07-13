@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "lint": "eslint --fix",
-    "test": "jest --coverage --passWithNoTests",
+    "test": "jest --coverage --passWithNoTests --silent",
     "test:tdd": "jest --watch"
   },
   "husky": {
@@ -21,15 +21,7 @@
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules/"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "statements": 100,
-        "branches": 100,
-        "functions": 100,
-        "lines": 100
-      }
-    }
+    ]
   },
   "devDependencies": {
     "eslint": "^7.4.0",
@@ -41,5 +33,9 @@
     "husky": "^4.2.5",
     "jest": "^26.1.0",
     "prettier": "^2.0.5"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.9.23"
   }
 }
