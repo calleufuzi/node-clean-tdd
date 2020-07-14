@@ -18,6 +18,6 @@ module.exports = class LoginRouter {
     if (!password) return HttpResponse.badRequest('password');
     const accessToken = this.authUseCase.auth(email, password);
     if (!accessToken) return HttpResponse.unauthorizedError();
-    return { statusCode: 200 };
+    return HttpResponse.ok();
   }
 };
