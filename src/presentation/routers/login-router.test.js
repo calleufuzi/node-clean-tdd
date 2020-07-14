@@ -5,7 +5,7 @@ const ServerSideError = require('../helpers/server-side-error');
 
 const makeAuthUseCaseWithError = () => {
   class AuthUseCaseSpy {
-    auth() {
+    async auth() {
       throw new Error();
     }
   }
@@ -14,7 +14,7 @@ const makeAuthUseCaseWithError = () => {
 
 const makeAuthUseCase = () => {
   class AuthUseCaseSpy {
-    auth(email, password) {
+    async auth(email, password) {
       this.email = email;
       this.password = password;
       return this.accessToken;
@@ -30,45 +30,45 @@ const makeSut = () => {
   return { sut, authUseCaseSpy };
 };
 describe('login Router', () => {
-  it('should return 400 if no email provided', () => {
+  it('should return 400 if no email provided', async () => {
     const { sut } = makeSut();
     const httpRequest = {
       body: {
         password: '123',
       },
     };
-    const httpResponse = sut.route(httpRequest);
+    const httpResponse = await sut.route(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new MissingParamError('email'));
   });
 
-  it('should return 400 if no password provided', () => {
+  it('should return 400 if no password provided', async () => {
     const { sut } = makeSut();
     const httpRequest = {
       body: {
         email: 'email@mail.com',
       },
     };
-    const httpResponse = sut.route(httpRequest);
+    const httpResponse = await sut.route(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new MissingParamError('password'));
   });
 
-  it('should return 500 if no httpRequest no provided', () => {
+  it('should return 500 if no httpRequest no provided', async () => {
     const { sut } = makeSut();
-    const httpResponse = sut.route();
+    const httpResponse = await sut.route();
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toStrictEqual(new ServerSideError());
   });
 
-  it('should return 500 if no httpRequest has no body', () => {
+  it('should return 500 if no httpRequest has no body', async () => {
     const { sut } = makeSut();
-    const httpResponse = sut.route({});
+    const httpResponse = await sut.route({});
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toStrictEqual(new ServerSideError());
   });
 
-  it('should call AuthUseCase with correct param', () => {
+  it('should call AuthUseCase with correct param', async () => {
     const { sut, authUseCaseSpy } = makeSut();
     const httpRequest = {
       body: {
@@ -76,12 +76,12 @@ describe('login Router', () => {
         password: '123123',
       },
     };
-    sut.route(httpRequest);
+    await sut.route(httpRequest);
     expect(authUseCaseSpy.email).toBe(httpRequest.body.email);
     expect(authUseCaseSpy.password).toBe(httpRequest.body.password);
   });
 
-  it('should return 401 when invalid credential are passed', () => {
+  it('should return 401 when invalid credential are passed', async () => {
     const { sut, authUseCaseSpy } = makeSut();
     authUseCaseSpy.accessToken = null;
     const httpRequest = {
@@ -90,12 +90,12 @@ describe('login Router', () => {
         password: 'invalid_pass',
       },
     };
-    const httpResponse = sut.route(httpRequest);
+    const httpResponse = await sut.route(httpRequest);
     expect(httpResponse.statusCode).toBe(401);
     expect(httpResponse.body).toStrictEqual(new UnauthorizedError());
   });
 
-  it('should return 200 when valid credential are provided', () => {
+  it('should return 200 when valid credential are provided', async () => {
     const { sut, authUseCaseSpy } = makeSut();
     const httpRequest = {
       body: {
@@ -104,12 +104,12 @@ describe('login Router', () => {
       },
     };
 
-    const httpResponse = sut.route(httpRequest);
+    const httpResponse = await sut.route(httpRequest);
     expect(httpResponse.statusCode).toBe(200);
     expect(httpResponse.body.accessToken).toBe(authUseCaseSpy.accessToken);
   });
 
-  it('should return 500 if no authUseCase is provided', () => {
+  it('should return 500 if no authUseCase is provided', async () => {
     const sut = new LoginRouter();
 
     const httpRequest = {
@@ -118,12 +118,12 @@ describe('login Router', () => {
         password: 'any_pass',
       },
     };
-    const httpResponse = sut.route(httpRequest);
+    const httpResponse = await sut.route(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toStrictEqual(new ServerSideError());
   });
 
-  it('should return 500 if no authUseCase has no auth method', () => {
+  it('should return 500 if no authUseCase has no auth method', async () => {
     class AuthUseCaseSpy {}
     const authUseCaseSpy = new AuthUseCaseSpy();
 
@@ -136,12 +136,12 @@ describe('login Router', () => {
       },
     };
 
-    const httpResponse = sut.route(httpRequest);
+    const httpResponse = await sut.route(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toStrictEqual(new ServerSideError());
   });
 
-  it('should return 500 if no authUseCase throw', () => {
+  it('should return 500 if no authUseCase throw', async () => {
     const authUseCaseSpy = makeAuthUseCaseWithError();
     const sut = new LoginRouter(authUseCaseSpy);
 
@@ -152,7 +152,7 @@ describe('login Router', () => {
       },
     };
 
-    const httpResponse = sut.route(httpRequest);
+    const httpResponse = await sut.route(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toStrictEqual(new ServerSideError());
   });
