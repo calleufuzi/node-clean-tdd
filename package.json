@@ -8,7 +8,8 @@
     "start": "node index.js",
     "lint": "eslint --fix",
     "test": "jest --passWithNoTests --colors --noStackTrace --silent",
-    "test:unit": "yarn test -- --watch ",
+    "test:unit": "yarn test -- --watch -c jest-unit-config.js",
+    "test:integration": "yarn test -- --watch -c jest-integration-config.js",
     "test:tdd": "yarn test -- --watch",
     "test:ci": "yarn test -- --coverage"
   },
@@ -17,14 +18,6 @@
       "pre-commit": "yarn run lint && yarn test",
       "pre-push": "yarn run test:ci"
     }
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "*.js"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/node_modules/"
-    ]
   },
   "devDependencies": {
     "eslint": "^7.4.0",
