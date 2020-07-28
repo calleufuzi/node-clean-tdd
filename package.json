@@ -7,12 +7,15 @@
   "scripts": {
     "start": "node index.js",
     "lint": "eslint --fix",
-    "test": "jest --coverage --passWithNoTests --silent",
-    "test:tdd": "jest --watch"
+    "test": "jest --passWithNoTests --colors --noStackTrace --silent",
+    "test:unit": "yarn test -- --watch ",
+    "test:tdd": "yarn test -- --watch",
+    "test:ci": "yarn test -- --coverage"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn run lint && yarn test"
+      "pre-commit": "yarn run lint && yarn test",
+      "pre-push": "yarn run test:ci"
     }
   },
   "jest": {
