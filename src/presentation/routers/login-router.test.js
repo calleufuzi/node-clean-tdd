@@ -13,6 +13,15 @@ const makeAuthUseCaseWithError = () => {
   return new AuthUseCaseSpy();
 };
 
+const makeEmailValidatorWithError = () => {
+  class EmailValidatorSpy {
+    isValid() {
+      throw new Error();
+    }
+  }
+  return new EmailValidatorSpy();
+};
+
 const makeAuthUseCase = () => {
   class AuthUseCaseSpy {
     async auth(email, password) {
@@ -213,6 +222,23 @@ describe('login Router', () => {
         password: 'any_pass',
       },
     };
+    const httpResponse = await sut.route(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toStrictEqual(new ServerSideError());
+  });
+
+  it('should return 500 if no emailValidar throw', async () => {
+    const authUseCaseSpy = makeAuthUseCase();
+    const emailValidatorSpy = makeEmailValidatorWithError();
+    const sut = new LoginRouter(authUseCaseSpy, emailValidatorSpy);
+
+    const httpRequest = {
+      body: {
+        email: 'any@mail.com',
+        password: 'any_pass',
+      },
+    };
+
     const httpResponse = await sut.route(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toStrictEqual(new ServerSideError());
